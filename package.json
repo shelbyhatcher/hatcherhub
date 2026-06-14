@@ -1,21 +1,11 @@
 {
-  "name": "the-mom-drop",
+  "name": "thetrendcatcher-saas",
   "version": "1.0.0",
-  "description": "",
-  "main": "backend/server.js",
-  "type": "module",
+  "description": "TheTrendCatcher SaaS primary repository",
+  "private": true,
   "scripts": {
-    "start": "node backend/server.js",
-    "dev": "nodemon backend/server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "dependencies": {
-    "better-sqlite3": "^12.10.1",
-    "cors": "^2.8.6",
-    "dotenv": "^17.4.2",
-    "express": "^5.2.1"
-  },
-  "devDependencies": {
-    "nodemon": "^3.1.14"
+    "install:all": "npm install --prefix frontend && npm install --prefix trendcatcher-blog",
+    "build:frontend": "npm run build --prefix frontend",
+    "start:blog": "node trendcatcher-blog/server-v4.js"
   }
 }

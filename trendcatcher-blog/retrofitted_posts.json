@@ -1,0 +1,446 @@
+[
+  {
+    "id": "vs-1",
+    "slug": "viral-scalp-massager",
+    "category": "beauty",
+    "keyword": "scalp massager",
+    "affiliateLinks": {
+      "rakuten": "/go/viral-scalp-massager-rakuten",
+      "refersion": "/go/viral-scalp-massager-refersion",
+      "amazon": "/go/viral-scalp-massager-amazon"
+    },
+    "affiliateMeta": {
+      "primary": "rakuten",
+      "networks": [
+        {
+          "key": "rakuten",
+          "name": "Rakuten",
+          "commissionRange": "3-20%",
+          "cookieDays": 14,
+          "destinationUrl": "https://click.linksynergy.com/deeplink?id=TC_RAKUTEN_789&mid=0&murl=https%3A%2F%2Fwww.rakuten.com%2Fsearch%3Fquery%3Dscalp%20massager"
+        },
+        {
+          "key": "refersion",
+          "name": "Refersion",
+          "commissionRange": "5-30%",
+          "cookieDays": 30,
+          "destinationUrl": "https://www.refersion.com/l/TC_REFERSION_112?subid=scalp%20massager"
+        },
+        {
+          "key": "amazon",
+          "name": "Amazon",
+          "commissionRange": "1-10%",
+          "cookieDays": 1,
+          "destinationUrl": "https://www.amazon.com/s?k=scalp%20massager&tag=shopwitshelby-20&linkCode=ur2"
+        }
+      ]
+    }
+  },
+  {
+    "id": "hg-1",
+    "slug": "viral-kitchen-gadgets-tiktok",
+    "category": "home-goods",
+    "keyword": "viral kitchen gadgets",
+    "affiliateLinks": {
+      "shareasale": "/go/viral-kitchen-gadgets-tiktok-shareasale",
+      "avantlink": "/go/viral-kitchen-gadgets-tiktok-avantlink",
+      "amazon": "/go/viral-kitchen-gadgets-tiktok-amazon"
+    },
+    "affiliateMeta": {
+      "primary": "shareasale",
+      "networks": [
+        {
+          "key": "shareasale",
+          "name": "ShareASale",
+          "commissionRange": "4-25%",
+          "cookieDays": 30,
+          "destinationUrl": "https://www.shareasale.com/r.cfm?b=0&u=TC_SHAREASALE_123&m=0&afftrack=viral%20kitchen%20gadgets&urllink="
+        },
+        {
+          "key": "avantlink",
+          "name": "AvantLink",
+          "commissionRange": "5-20%",
+          "cookieDays": 30,
+          "destinationUrl": "https://avantlink.com/link/?ml=TC_AVANT_131&pt=1&alrt=&ctc=viral%20kitchen%20gadgets"
+        },
+        {
+          "key": "amazon",
+          "name": "Amazon",
+          "commissionRange": "1-10%",
+          "cookieDays": 1,
+          "destinationUrl": "https://www.amazon.com/s?k=viral%20kitchen%20gadgets&tag=shopwitshelby-20&linkCode=ur2"
+        }
+      ]
+    }
+  },
+  {
+    "id": "hg-2",
+    "slug": "best-home-organization-under-50",
+    "category": "home-goods",
+    "keyword": "home organization products",
+    "affiliateLinks": {
+      "shareasale": "/go/best-home-organization-under-50-shareasale",
+      "avantlink": "/go/best-home-organization-under-50-avantlink",
+      "amazon": "/go/best-home-organization-under-50-amazon"
+    },
+    "affiliateMeta": {
+      "primary": "shareasale",
+      "networks": [
+        {
+          "key": "shareasale",
+          "name": "ShareASale",
+          "commissionRange": "4-25%",
+          "cookieDays": 30,
+          "destinationUrl": "https://www.shareasale.com/r.cfm?b=0&u=TC_SHAREASALE_123&m=0&afftrack=home%20organization%20products&urllink="
+        },
+        {
+          "key": "avantlink",
+          "name": "AvantLink",
+          "commissionRange": "5-20%",
+          "cookieDays": 30,
+          "destinationUrl": "https://avantlink.com/link/?ml=TC_AVANT_131&pt=1&alrt=&ctc=home%20organization%20products"
+        },
+        {
+          "key": "amazon",
+          "name": "Amazon",
+          "commissionRange": "1-10%",
+          "cookieDays": 1,
+          "destinationUrl": "https://www.amazon.com/s?k=home%20organization%20products&tag=shopwitshelby-20&linkCode=ur2"
+        }
+      ]
+    }
+  },
+  {
+    "id": "hg-3",
+    "slug": "air-fryer-accessories-worth-buying",
+    "category": "home-goods",
+    "keyword": "air fryer accessories",
+    "affiliateLinks": {
+      "shareasale": "/go/air-fryer-accessories-worth-buying-shareasale",
+      "avantlink": "/go/air-fryer-accessories-worth-buying-avantlink",
+      "amazon": "/go/air-fryer-accessories-worth-buying-amazon"
+    },
+    "affiliateMeta": {
+      "primary": "shareasale",
+      "networks": [
+        {
+          "key": "shareasale",
+          "name": "ShareASale",
+          "commissionRange": "4-25%",
+          "cookieDays": 30,
+          "destinationUrl": "https://www.shareasale.com/r.cfm?b=0&u=TC_SHAREASALE_123&m=0&afftrack=air%20fryer%20accessories&urllink="
+        },
+        {
+          "key": "avantlink",
+          "name": "AvantLink",
+          "commissionRange": "5-20%",
+          "cookieDays": 30,
+          "destinationUrl": "https://avantlink.com/link/?ml=TC_AVANT_131&pt=1&alrt=&ctc=air%20fryer%20accessories"
+        },
+        {
+          "key": "amazon",
+          "name": "Amazon",
+          "commissionRange": "1-10%",
+          "cookieDays": 1,
+          "destinationUrl": "https://www.amazon.com/s?k=air%20fryer%20accessories&tag=shopwitshelby-20&linkCode=ur2"
+        }
+      ]
+    }
+  },
+  {
+    "id": "be-1",
+    "slug": "viral-skincare-devices-instagram",
+    "category": "beauty",
+    "keyword": "skincare devices LED mask",
+    "affiliateLinks": {
+      "rakuten": "/go/viral-skincare-devices-instagram-rakuten",
+      "refersion": "/go/viral-skincare-devices-instagram-refersion",
+      "amazon": "/go/viral-skincare-devices-instagram-amazon"
+    },
+    "affiliateMeta": {
+      "primary": "rakuten",
+      "networks": [
+        {
+          "key": "rakuten",
+          "name": "Rakuten",
+          "commissionRange": "3-20%",
+          "cookieDays": 14,
+          "destinationUrl": "https://click.linksynergy.com/deeplink?id=TC_RAKUTEN_789&mid=0&murl=https%3A%2F%2Fwww.rakuten.com%2Fsearch%3Fquery%3Dskincare%20devices%20LED%20mask"
+        },
+        {
+          "key": "refersion",
+          "name": "Refersion",
+          "commissionRange": "5-30%",
+          "cookieDays": 30,
+          "destinationUrl": "https://www.refersion.com/l/TC_REFERSION_112?subid=skincare%20devices%20LED%20mask"
+        },
+        {
+          "key": "amazon",
+          "name": "Amazon",
+          "commissionRange": "1-10%",
+          "cookieDays": 1,
+          "destinationUrl": "https://www.amazon.com/s?k=skincare%20devices%20LED%20mask&tag=shopwitshelby-20&linkCode=ur2"
+        }
+      ]
+    }
+  },
+  {
+    "id": "be-2",
+    "slug": "viral-drugstore-beauty-products",
+    "category": "beauty",
+    "keyword": "viral drugstore beauty",
+    "affiliateLinks": {
+      "rakuten": "/go/viral-drugstore-beauty-products-rakuten",
+      "refersion": "/go/viral-drugstore-beauty-products-refersion",
+      "amazon": "/go/viral-drugstore-beauty-products-amazon"
+    },
+    "affiliateMeta": {
+      "primary": "rakuten",
+      "networks": [
+        {
+          "key": "rakuten",
+          "name": "Rakuten",
+          "commissionRange": "3-20%",
+          "cookieDays": 14,
+          "destinationUrl": "https://click.linksynergy.com/deeplink?id=TC_RAKUTEN_789&mid=0&murl=https%3A%2F%2Fwww.rakuten.com%2Fsearch%3Fquery%3Dviral%20drugstore%20beauty"
+        },
+        {
+          "key": "refersion",
+          "name": "Refersion",
+          "commissionRange": "5-30%",
+          "cookieDays": 30,
+          "destinationUrl": "https://www.refersion.com/l/TC_REFERSION_112?subid=viral%20drugstore%20beauty"
+        },
+        {
+          "key": "amazon",
+          "name": "Amazon",
+          "commissionRange": "1-10%",
+          "cookieDays": 1,
+          "destinationUrl": "https://www.amazon.com/s?k=viral%20drugstore%20beauty&tag=shopwitshelby-20&linkCode=ur2"
+        }
+      ]
+    }
+  },
+  {
+    "id": "be-3",
+    "slug": "viral-hair-care-tools",
+    "category": "beauty",
+    "keyword": "heatless curlers hair tools",
+    "affiliateLinks": {
+      "rakuten": "/go/viral-hair-care-tools-rakuten",
+      "refersion": "/go/viral-hair-care-tools-refersion",
+      "amazon": "/go/viral-hair-care-tools-amazon"
+    },
+    "affiliateMeta": {
+      "primary": "rakuten",
+      "networks": [
+        {
+          "key": "rakuten",
+          "name": "Rakuten",
+          "commissionRange": "3-20%",
+          "cookieDays": 14,
+          "destinationUrl": "https://click.linksynergy.com/deeplink?id=TC_RAKUTEN_789&mid=0&murl=https%3A%2F%2Fwww.rakuten.com%2Fsearch%3Fquery%3Dheatless%20curlers%20hair%20tools"
+        },
+        {
+          "key": "refersion",
+          "name": "Refersion",
+          "commissionRange": "5-30%",
+          "cookieDays": 30,
+          "destinationUrl": "https://www.refersion.com/l/TC_REFERSION_112?subid=heatless%20curlers%20hair%20tools"
+        },
+        {
+          "key": "amazon",
+          "name": "Amazon",
+          "commissionRange": "1-10%",
+          "cookieDays": 1,
+          "destinationUrl": "https://www.amazon.com/s?k=heatless%20curlers%20hair%20tools&tag=shopwitshelby-20&linkCode=ur2"
+        }
+      ]
+    }
+  },
+  {
+    "id": "el-1",
+    "slug": "viral-desk-accessories",
+    "category": "electronics",
+    "keyword": "desk accessories setup",
+    "affiliateLinks": {
+      "cj": "/go/viral-desk-accessories-cj",
+      "impact": "/go/viral-desk-accessories-impact",
+      "amazon": "/go/viral-desk-accessories-amazon"
+    },
+    "affiliateMeta": {
+      "primary": "cj",
+      "networks": [
+        {
+          "key": "cj",
+          "name": "CJ Affiliate",
+          "commissionRange": "1-20%",
+          "cookieDays": 30,
+          "destinationUrl": "https://www.anrdoezrs.net/click-TC_CJ_101-13940847?url=https%3A%2F%2Fwww.bestbuy.com%2Fsite%2Fsearchpage.jsp%3Fst%3Ddesk%20accessories%20setup"
+        },
+        {
+          "key": "impact",
+          "name": "Impact",
+          "commissionRange": "2-30%",
+          "cookieDays": 30,
+          "destinationUrl": "https://impact.com/partner/TC_IMPACT_456?affclickid=tc_desk_accessories_setup"
+        },
+        {
+          "key": "amazon",
+          "name": "Amazon",
+          "commissionRange": "1-10%",
+          "cookieDays": 1,
+          "destinationUrl": "https://www.amazon.com/s?k=desk%20accessories%20setup&tag=shopwitshelby-20&linkCode=ur2"
+        }
+      ]
+    }
+  },
+  {
+    "id": "el-2",
+    "slug": "best-budget-earbuds-under-50",
+    "category": "electronics",
+    "keyword": "budget earbuds under 50",
+    "affiliateLinks": {
+      "cj": "/go/best-budget-earbuds-under-50-cj",
+      "impact": "/go/best-budget-earbuds-under-50-impact",
+      "amazon": "/go/best-budget-earbuds-under-50-amazon"
+    },
+    "affiliateMeta": {
+      "primary": "cj",
+      "networks": [
+        {
+          "key": "cj",
+          "name": "CJ Affiliate",
+          "commissionRange": "1-20%",
+          "cookieDays": 30,
+          "destinationUrl": "https://www.anrdoezrs.net/click-TC_CJ_101-13940847?url=https%3A%2F%2Fwww.bestbuy.com%2Fsite%2Fsearchpage.jsp%3Fst%3Dbudget%20earbuds%20under%2050"
+        },
+        {
+          "key": "impact",
+          "name": "Impact",
+          "commissionRange": "2-30%",
+          "cookieDays": 30,
+          "destinationUrl": "https://impact.com/partner/TC_IMPACT_456?affclickid=tc_budget_earbuds_under_50"
+        },
+        {
+          "key": "amazon",
+          "name": "Amazon",
+          "commissionRange": "1-10%",
+          "cookieDays": 1,
+          "destinationUrl": "https://www.amazon.com/s?k=budget%20earbuds%20under%2050&tag=shopwitshelby-20&linkCode=ur2"
+        }
+      ]
+    }
+  },
+  {
+    "id": "el-3",
+    "slug": "viral-phone-accessories",
+    "category": "electronics",
+    "keyword": "viral phone accessories",
+    "affiliateLinks": {
+      "cj": "/go/viral-phone-accessories-cj",
+      "impact": "/go/viral-phone-accessories-impact",
+      "amazon": "/go/viral-phone-accessories-amazon"
+    },
+    "affiliateMeta": {
+      "primary": "cj",
+      "networks": [
+        {
+          "key": "cj",
+          "name": "CJ Affiliate",
+          "commissionRange": "1-20%",
+          "cookieDays": 30,
+          "destinationUrl": "https://www.anrdoezrs.net/click-TC_CJ_101-13940847?url=https%3A%2F%2Fwww.bestbuy.com%2Fsite%2Fsearchpage.jsp%3Fst%3Dviral%20phone%20accessories"
+        },
+        {
+          "key": "impact",
+          "name": "Impact",
+          "commissionRange": "2-30%",
+          "cookieDays": 30,
+          "destinationUrl": "https://impact.com/partner/TC_IMPACT_456?affclickid=tc_viral_phone_accessories"
+        },
+        {
+          "key": "amazon",
+          "name": "Amazon",
+          "commissionRange": "1-10%",
+          "cookieDays": 1,
+          "destinationUrl": "https://www.amazon.com/s?k=viral%20phone%20accessories&tag=shopwitshelby-20&linkCode=ur2"
+        }
+      ]
+    }
+  },
+  {
+    "id": "tn-1",
+    "slug": "trending-weekly-roundup-june-2026-w2",
+    "category": "trending",
+    "keyword": "trending viral products 2026",
+    "affiliateLinks": {
+      "shareasale": "/go/trending-weekly-roundup-june-2026-w2-shareasale",
+      "impact": "/go/trending-weekly-roundup-june-2026-w2-impact",
+      "amazon": "/go/trending-weekly-roundup-june-2026-w2-amazon"
+    },
+    "affiliateMeta": {
+      "primary": "shareasale",
+      "networks": [
+        {
+          "key": "shareasale",
+          "name": "ShareASale",
+          "commissionRange": "4-25%",
+          "cookieDays": 30,
+          "destinationUrl": "https://www.shareasale.com/r.cfm?b=0&u=TC_SHAREASALE_123&m=0&afftrack=trending%20viral%20products%202026&urllink="
+        },
+        {
+          "key": "impact",
+          "name": "Impact",
+          "commissionRange": "2-30%",
+          "cookieDays": 30,
+          "destinationUrl": "https://impact.com/partner/TC_IMPACT_456?affclickid=tc_trending_viral_products_2026"
+        },
+        {
+          "key": "amazon",
+          "name": "Amazon",
+          "commissionRange": "1-10%",
+          "cookieDays": 1,
+          "destinationUrl": "https://www.amazon.com/s?k=trending%20viral%20products%202026&tag=shopwitshelby-20&linkCode=ur2"
+        }
+      ]
+    }
+  },
+  {
+    "id": "vs-2",
+    "slug": "home-products-trending-this-week",
+    "category": "home-goods",
+    "keyword": "trending home products",
+    "affiliateLinks": {
+      "shareasale": "/go/home-products-trending-this-week-shareasale",
+      "avantlink": "/go/home-products-trending-this-week-avantlink",
+      "amazon": "/go/home-products-trending-this-week-amazon"
+    },
+    "affiliateMeta": {
+      "primary": "shareasale",
+      "networks": [
+        {
+          "key": "shareasale",
+          "name": "ShareASale",
+          "commissionRange": "4-25%",
+          "cookieDays": 30,
+          "destinationUrl": "https://www.shareasale.com/r.cfm?b=0&u=TC_SHAREASALE_123&m=0&afftrack=trending%20home%20products&urllink="
+        },
+        {
+          "key": "avantlink",
+          "name": "AvantLink",
+          "commissionRange": "5-20%",
+          "cookieDays": 30,
+          "destinationUrl": "https://avantlink.com/link/?ml=TC_AVANT_131&pt=1&alrt=&ctc=trending%20home%20products"
+        },
+        {
+          "key": "amazon",
+          "name": "Amazon",
+          "commissionRange": "1-10%",
+          "cookieDays": 1,
+          "destinationUrl": "https://www.amazon.com/s?k=trending%20home%20products&tag=shopwitshelby-20&linkCode=ur2"
+        }
+      ]
+    }
+  }
+]
