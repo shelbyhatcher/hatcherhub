@@ -5,3 +5,17 @@ node_modules/
 dist/
 backend/logs/
 backend/seo-compiled/
+
+# Python compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Local development files
+.vscode/
+.idea/

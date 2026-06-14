@@ -1,0 +1,15 @@
+{
+  "name": "trendcatcher-blog",
+  "version": "1.0.0",
+  "description": "TrendCatcher Automated Niche Content Sites - Home Goods, Beauty, Electronics",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.22.2",
+    "helmet": "^7.2.0",
+    "marked": "^12.0.2"
+  }
+}
