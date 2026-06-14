@@ -641,6 +641,97 @@ ${dealsMarkdown}
   console.log(`[SEO COMPILER] Pre-compiled Daily SEO post written to: ${savePath}`);
 }
 
+// 7. Dynamic Category Keyword Guides Compiler
+export function compileCategoryKeywordGuides() {
+  console.log('[SEO COMPILER] Generating category keyword guides...');
+
+  const categories = ['luxury-beauty', 'baby-gear', 'home-organization'];
+
+  const categoryMetadata = {
+    'luxury-beauty': {
+      title: 'The Ultimate Parent Guide to Luxury Beauty Deals on Amazon',
+      keywords: ['amazon luxury beauty deals', 'luxury beauty discounts amazon', 'laneige lip sleeping mask sale', 'elemis cleansing balm discount'],
+      intro: 'When parenting exhaustion hits, self-care is not a luxury—it’s a survival mechanism. We track top-tier luxury skincare, cosmetics, and hair accessories that rarely drop in price, prioritizing high-commission 10% categories to make every click count.',
+      focus: 'Premium skincare, aesthetic hair stylers, and restorative overnight serums.'
+    },
+    'baby-gear': {
+      title: 'Premium Baby Gear & Stroller Deals: Mom-Approved Amazon Savings',
+      keywords: ['premium baby gear sale', 'uppababy stroller deals', 'baby monitor discounts', 'hatch sound machine sale'],
+      intro: 'Navigating baby gear can feel like buying a car. We surface deep discounts on high-end strollers, car seats, sleep aids, and safety monitors. High Average Order Value (AOV) items are filtered for perfect ratings so you can shop with absolute peace of mind.',
+      focus: 'Multi-stage strollers, secure car seats, and smart nursery savers.'
+    },
+    'home-organization': {
+      title: 'The Neat Pantry & Playroom: Aesthetic Home Organization on Amazon',
+      keywords: ['pantry organization containers', 'clear plastic storage bins', 'dyson cordless vacuum discounts', 'aesthetic kitchen storage'],
+      intro: 'Parenting comes with a lot of stuff. We find premium, stackable, durable home organization systems and premium cordless vacuums that turn domestic chaos into visual serenity, driven by high-engagement and daily utility items.',
+      focus: 'Aesthetic clear bins, reusable storage solutions, and high-performance cleanups.'
+    }
+  };
+
+  categories.forEach(cat => {
+    const meta = categoryMetadata[cat];
+    const deals = db.prepare(`
+      SELECT * FROM active_deals 
+      WHERE is_active = 1 AND category = ?
+      ORDER BY score DESC
+    `).all(cat);
+
+    let dealsMarkdown = '';
+    if (deals.length === 0) {
+      dealsMarkdown = '\n*Currently, our deal engine is scanning for new premium price drops in this category. Check back in a few minutes!*\n';
+    } else {
+      deals.forEach((deal, idx) => {
+        const tagline = RELATABLE_TAGLINES[deal.asin] || 'A favorite brand pick of the week.';
+        const trackingUrl = `https://themomdrop.com/drops/track?dealId=${deal.id}&channel=seo-${cat}`;
+        dealsMarkdown += `
+### ${idx + 1}. Featured Drop: ${deal.title}
+* **Original Price:** ${deal.original_price}
+* **Today's Price:** ${deal.discount_price} **(${deal.discount_percentage}% OFF)**
+* **Rating:** ${deal.rating}★ (${deal.reviews_count.toLocaleString()} reviews)
+* **Obsession Hook:** ${tagline}
+
+👉 **[Get this Deal on Amazon ↗](${trackingUrl})**
+
+`;
+      });
+    }
+
+    const dateStr = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    const fullMarkdown = `
+# ${meta.title}
+*Last Updated: ${dateStr}*
+
+**Target Search Keywords**: \`${meta.keywords.join('`, `')}\`
+**Compiled Path**: \`seo-compiled/guide-${cat}.md\`
+
+---
+
+${meta.intro}
+
+## Why Modern Parents Love Our Curations
+We don't just dump random links. Our autonomous deal finder uses a proprietary priority scoring algorithm to rank items by parent rating, discount depth, and estimated savings. Only products with **4.0+ star ratings and 20%+ off** make the cut.
+
+### Focus Areas in this Category:
+* ${meta.focus}
+
+---
+
+## Live Active Drops in this Category Right Now
+
+${dealsMarkdown}
+
+---
+
+### 🚨 Send this to your Mom Group Chat!
+*Sharing is caring, bestie! Don't let your friends pay full retail for premium essentials. Forward this guide to your group chat immediately.*
+`.trim();
+
+    const savePath = path.join(SEO_DIR, `guide-${cat}.md`);
+    fs.writeFileSync(savePath, fullMarkdown);
+    console.log(`[SEO COMPILER] Pre-compiled Category Keyword Guide for ${cat} written to: ${savePath}`);
+  });
+}
+
 // Start Scheduling Wrapper
 let scanIntervalId = null;
 
@@ -653,6 +744,7 @@ export function startWorker() {
     simulateDealsExpiration();
     compileSundayDrop();
     compileDailySeoRoundup();
+    compileCategoryKeywordGuides();
   } catch (err) {
     console.error('[WORKER ERROR] Error running initial worker boot tasks:', err);
   }
@@ -665,6 +757,7 @@ export function startWorker() {
       simulateAmazonScan();
       simulateDealsExpiration();
       compileDailySeoRoundup();
+      compileCategoryKeywordGuides();
 
       // Compile Sunday Drop newsletter digest on Sundays
       const today = new Date();
@@ -693,5 +786,6 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   simulateDealsExpiration();
   compileSundayDrop();
   compileDailySeoRoundup();
+  compileCategoryKeywordGuides();
   console.log('[WORKER] Standalone run complete. Exiting.');
 }
