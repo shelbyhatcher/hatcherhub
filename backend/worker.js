@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
 import { fileURLToPath } from 'url';
-import db from './database.js';
+import db, { initDB } from './database.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -12,6 +12,15 @@ const LOGS_DIR = path.join(__dirname, 'logs');
 const SEO_DIR = path.join(__dirname, 'seo-compiled');
 fs.mkdirSync(LOGS_DIR, { recursive: true });
 fs.mkdirSync(SEO_DIR, { recursive: true });
+
+// Configurable constants from environment variables
+const PUBLIC_BASE_URL = process.env.PUBLIC_BASE_URL || 'http://localhost:3000';
+const AMAZON_ASSOCIATE_TAG = process.env.AMAZON_ASSOCIATE_TAG || 'shopwitshelby-20';
+const ENABLE_SMS = process.env.ENABLE_SMS === 'true'; // defaults to false (Email-only for MVP launch)
+
+console.log(`[WORKER CONFIG] PUBLIC_BASE_URL: ${PUBLIC_BASE_URL}`);
+console.log(`[WORKER CONFIG] AMAZON_ASSOCIATE_TAG: ${AMAZON_ASSOCIATE_TAG}`);
+console.log(`[WORKER CONFIG] ENABLE_SMS (SMS Dispatch Active): ${ENABLE_SMS}`);
 
 const NOTIFICATIONS_LOG_PATH = path.join(LOGS_DIR, 'notifications.log');
 
@@ -280,6 +289,10 @@ export function simulateAmazonScan() {
       // Score = AOV * Commission % * Discount % (discountPrice * commRate * discountPercentage)
       const score = Math.round(discountPrice * commRate * discountPercentage * 100) / 100;
 
+      // Note: The dummy shortlinks in the pool are placeholders. Real production links are constructed 
+      // dynamically using full Amazon DP links with the configured AMAZON_ASSOCIATE_TAG.
+      const affiliateUrl = `https://www.amazon.com/dp/${product.asin}?tag=${AMAZON_ASSOCIATE_TAG}`;
+
       // Check if we already have this deal and if the price has dropped further
       const existing = db.prepare('SELECT * FROM active_deals WHERE asin = ?').get(product.asin);
       const isMuchLowerPrice = existing ? (discountPrice < existing.discount_price) : true;
@@ -314,7 +327,7 @@ export function simulateAmazonScan() {
         discountPercentage,
         product.rating,
         product.reviews_count,
-        product.affiliate_url,
+        affiliateUrl,
         product.image_url,
         commRate,
         estimatedCommission,
@@ -359,14 +372,18 @@ function dispatchAlerts(product, originalPrice, discountPrice, discountPercentag
   const isFlashDrop = discountPercentage >= 40;
 
   subscribers.forEach(sub => {
-    const trackerUrl = `http://localhost:3000/api/clicks/track?dealId=${dealId}&subscriberId=${sub.id}&channel=${sub.channel}`;
+    const trackerUrl = `${PUBLIC_BASE_URL}/api/clicks/track?dealId=${dealId}&subscriberId=${sub.id}&channel=${sub.channel}`;
     
     if (sub.channel === 'sms' && sub.phone) {
+      if (!ENABLE_SMS) {
+        logNotification('SMS_DISABLED_STUB', `To: ${sub.phone} (${sub.name || 'Bestie'}) - [SMS DISPATCH DISABLED FOR MVP] Real-time alerts are Email-only for launch. Email address registered: ${sub.email || 'None'}`);
+        return;
+      }
       let smsBody = '';
       if (isFlashDrop) {
-        smsBody = `FLASH DROP! ⚡ OMG bestie, the ${brand} ${productName} is ${discountPercentage}% OFF right now! Down from $${originalPrice} to $${discountPrice} ($${savings} savings!).\n\nThis will sell out fast. RUN: ${trackerUrl}\n\n*Text STOP to opt out.*`;
+        smsBody = `FLASH DROP! ⚡ OMG bestie, the ${brand} ${productName} is ${discountPercentage}% OFF right now! Down from ${originalPrice} to ${discountPrice} (${savings} savings!).\n\nThis will sell out fast. RUN: ${trackerUrl}\n\n*Text STOP to opt out.*`;
       } else {
-        smsBody = `MOM DROP! 🚨 The ${brand} ${productName} is down to $${discountPrice} (usually $${originalPrice}) on Amazon! 🛒 Perfect styling win.\n\nRated ${product.rating}★ with ${product.reviews_count.toLocaleString()} reviews. Grab it here: ${trackerUrl}\n\n*Text STOP to opt out.*`;
+        smsBody = `MOM DROP! 🚨 The ${brand} ${productName} is down to ${discountPrice} (usually ${originalPrice}) on Amazon! 🛒 Perfect styling win.\n\nRated ${product.rating}★ with ${product.reviews_count.toLocaleString()} reviews. Grab it here: ${trackerUrl}\n\n*Text STOP to opt out.*`;
       }
       logNotification('MOCK_TWILIO_SMS', `To: ${sub.phone} (${sub.name || 'Bestie'})\nMessage: ${smsBody}`);
     } 
@@ -491,10 +508,10 @@ export function compileSundayDrop() {
         </p>
         <div style="border-top: 1px dashed #e2e8f0; padding-top: 15px; display: flex; justify-content: space-between; align-items: center;">
           <div>
-            <span style="text-decoration: line-through; color: #a0aec0; font-size: 14px; margin-right: 8px;">$${deal.original_price}</span>
-            <span style="color: #2D3748; font-size: 18px; font-weight: bold;">$${deal.discount_price}</span>
+            <span style="text-decoration: line-through; color: #a0aec0; font-size: 14px; margin-right: 8px;">${deal.original_price}</span>
+            <span style="color: #2D3748; font-size: 18px; font-weight: bold;">${deal.discount_price}</span>
           </div>
-          <a href="http://localhost:3000/api/clicks/track?dealId=${deal.id}&channel=sunday-drop" 
+          <a href="${PUBLIC_BASE_URL}/api/clicks/track?dealId=${deal.id}&channel=sunday-drop" 
              style="background-color: #FF6F61; color: #ffffff; text-decoration: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; font-size: 14px; display: inline-block;">
             Grab this Deal ↗
           </a>
@@ -545,7 +562,7 @@ export function compileSundayDrop() {
         <p style="color: #742a2a; font-size: 14px; line-height: 1.5; margin-bottom: 15px;">
           Enjoying these weekly savings? Don't gatekeep! Share the love with your favorite mom friends. Refer 3 friends and get unlocked onto our VIP alerts.
         </p>
-        <a href="http://localhost:3000/signup" style="color: #FF6F61; font-weight: bold; font-size: 14px; text-decoration: underline;">
+        <a href="${PUBLIC_BASE_URL}/signup" style="color: #FF6F61; font-weight: bold; font-size: 14px; text-decoration: underline;">
           Get Your Referral Link Here ↗
         </a>
       </div>
@@ -554,7 +571,7 @@ export function compileSundayDrop() {
       <p style="text-align: center; font-size: 12px; color: #a0aec0; margin-top: 40px; margin-bottom: 0;">
         &copy; 2026 The Mom Drop. All rights reserved. <br/>
         As an Amazon Associate, we earn from qualifying purchases.<br/>
-        <a href="http://localhost:3000/unsubscribe" style="color: #a0aec0; text-decoration: underline;">Unsubscribe</a>
+        <a href="${PUBLIC_BASE_URL}/unsubscribe" style="color: #a0aec0; text-decoration: underline;">Unsubscribe</a>
       </p>
     </div>
   </div>
@@ -590,7 +607,7 @@ export function compileDailySeoRoundup() {
   let dealsMarkdown = '';
   topDeals.forEach((deal, idx) => {
     const tagline = RELATABLE_TAGLINES[deal.asin] || 'A favorite brand pick of the week.';
-    const trackingUrl = `https://themomdrop.com/drops/track?dealId=${deal.id}&channel=seo-daily`;
+    const trackingUrl = `${PUBLIC_BASE_URL}/api/clicks/track?dealId=${deal.id}&channel=seo-daily`;
     
     dealsMarkdown += `
 ## ${idx + 1}. Today’s Premium Drop: ${deal.title}
@@ -682,7 +699,7 @@ export function compileCategoryKeywordGuides() {
     } else {
       deals.forEach((deal, idx) => {
         const tagline = RELATABLE_TAGLINES[deal.asin] || 'A favorite brand pick of the week.';
-        const trackingUrl = `https://themomdrop.com/drops/track?dealId=${deal.id}&channel=seo-${cat}`;
+        const trackingUrl = `${PUBLIC_BASE_URL}/api/clicks/track?dealId=${deal.id}&channel=seo-${cat}`;
         dealsMarkdown += `
 ### ${idx + 1}. Featured Drop: ${deal.title}
 * **Original Price:** ${deal.original_price}
@@ -782,6 +799,7 @@ export function stopWorker() {
 // Standalone execution support
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   console.log('[WORKER] Running worker standalone execution once...');
+  initDB();
   simulateAmazonScan();
   simulateDealsExpiration();
   compileSundayDrop();

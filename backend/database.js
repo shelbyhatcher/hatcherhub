@@ -1,11 +1,27 @@
 import Database from 'better-sqlite3';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import fs from 'fs';
+import dotenv from 'dotenv';
 
-const DB_PATH = '/home/team/shared/app.db';
+dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Resolve the database path from environment variables, falling back to /home/team/shared/app.db
+export const dbPath = process.env.DATABASE_PATH || process.env.DB_PATH || '/home/team/shared/app.db';
+
+console.log(`[DATABASE] Using application database at: ${dbPath}`);
 
 // Ensure the database file's directory exists
-const db = new Database(DB_PATH);
+const parentDir = path.dirname(dbPath);
+if (!fs.existsSync(parentDir)) {
+  console.log(`[DATABASE] Creating directory for database: ${parentDir}`);
+  fs.mkdirSync(parentDir, { recursive: true });
+}
+
+const db = new Database(dbPath);
 db.pragma('journal_mode = WAL');
 
 // Define Schema
@@ -118,6 +134,8 @@ export function initDB() {
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
 
+    const associateTag = process.env.AMAZON_ASSOCIATE_TAG || 'shopwitshelby-20';
+
     // 1. Luxury Beauty Deal (10% commission)
     insertDeal.run(
       'deal-1',
@@ -129,7 +147,7 @@ export function initDB() {
       25.0,
       4.7,
       12400,
-      'https://amzn.to/3XlLaneigeDummy',
+      `https://www.amazon.com/dp/B00BO8B036?tag=${associateTag}`,
       'https://images-na.ssl-images-amazon.com/images/I/51AALQnQ1OL._SL1000_.jpg',
       0.10,
       1.80,
@@ -149,7 +167,7 @@ export function initDB() {
       20.0,
       4.8,
       1250,
-      'https://amzn.to/3XlUppababyDummy',
+      `https://www.amazon.com/dp/B083F3F7Z1?tag=${associateTag}`,
       'https://images-na.ssl-images-amazon.com/images/I/71uK-Vv0rJL._SL1500_.jpg',
       0.07,
       56.00, // 7% of 799.99
@@ -169,7 +187,7 @@ export function initDB() {
       30.0,
       4.5,
       3400,
-      'https://amzn.to/3XlStorageBinsDummy',
+      `https://www.amazon.com/dp/B09DFH556S?tag=${associateTag}`,
       'https://images-na.ssl-images-amazon.com/images/I/81MclbHkaYL._SL1500_.jpg',
       0.06,
       1.89,
@@ -178,7 +196,7 @@ export function initDB() {
       'Stackable clear plastic organization bins perfect for closet, pantry, or nursery storage.'
     );
 
-    console.log('Seeded initial premium dummy deals.');
+    console.log('Seeded initial premium dummy deals with Amazon Associate Tag.');
   }
 
   console.log('Database initialization complete.');
