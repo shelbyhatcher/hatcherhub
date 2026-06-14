@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import db, { initDB } from './database.js';
+import { startWorker } from './worker.js';
 
 dotenv.config();
 
@@ -310,4 +311,6 @@ app.use((req, res, next) => {
 
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`The Mom Drop server is listening at http://0.0.0.0:${PORT}`);
+  // Start the autonomous background worker
+  startWorker();
 });
