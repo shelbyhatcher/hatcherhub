@@ -36,6 +36,11 @@ See [`.env.example`](.env.example) for all configurable variables:
 | `DB_PATH` | (fallback) | Alternate name for database path |
 | `AMAZON_ASSOCIATE_TAG` | `shopwitshelby-20` | Amazon Associates tracking tag |
 | `ENABLE_SMS` | `false` | Enable SMS dispatch (MVP is email-only) |
+| `RESEND_API_KEY` | — | Resend API key for transactional email |
+| `EMAIL_FROM_NAME` | `The Mom Drop` | Sender display name |
+| `EMAIL_FROM_ADDRESS` | `hello@mom-drop.com` | Sender email address |
+| `EMAIL_SENDING_ENABLED` | `false` | Safety gate — set `true` only after DNS/email auth |
+| `TEST_EMAIL_RECIPIENT` | — | Optional recipient for `scripts/test-email.js` |
 
 ---
 
@@ -46,12 +51,15 @@ the-mom-drop/
 ├── backend/
 │   ├── server.js          # Express API server (port 3000)
 │   ├── database.js        # SQLite schema + seed data
+│   ├── email.js           # Resend email provider adapter
 │   ├── worker.js          # Background deal simulator + notification dispatcher
 │   ├── resilience_monitor.py  # Self-healing daemon
 │   ├── logs/              # Notification output (until real email is wired)
 │   └── seo-compiled/      # Auto-generated SEO content
 ├── frontend/
 │   └── dist/              # Built React SPA (served by Express)
+├── scripts/
+│   └── test-email.js      # Safe email config validator + test sender
 ├── .env.example           # Documented environment variables
 ├── LAUNCH_CHECKLIST.md    # DNS / email / deployment checklist
 └── package.json
@@ -70,6 +78,27 @@ the-mom-drop/
 
 ---
 
+## Email (Resend)
+
+Transactional emails are powered by [Resend](https://resend.com). The worker sends deal alerts via `backend/email.js`.
+
+**Behavior**:
+- If `RESEND_API_KEY` is not set: emails are logged to `backend/logs/notifications.log` (safe default)
+- If `RESEND_API_KEY` is set but `EMAIL_SENDING_ENABLED=false`: emails are logged (safety gate)
+- If both `RESEND_API_KEY` is set and `EMAIL_SENDING_ENABLED=true`: emails are sent live via Resend
+
+### Quick Test
+
+```bash
+# Validate config (no key exposed):
+node scripts/test-email.js
+
+# Send a test email (requires RESEND_API_KEY + EMAIL_SENDING_ENABLED=true):
+node scripts/test-email.js hello@mom-drop.com
+```
+
+---
+
 ## Launch
 
 See [`LAUNCH_CHECKLIST.md`](LAUNCH_CHECKLIST.md) for the full step-by-step deployment guide, including DNS records, email sender authentication (SPF/DKIM/DMARC), and pre-launch verification.
@@ -79,7 +108,7 @@ See [`LAUNCH_CHECKLIST.md`](LAUNCH_CHECKLIST.md) for the full step-by-step deplo
 ## MVP Limitations
 
 - **Deal scanning**: Currently uses seeded demo deals. Real Amazon Product Advertising API integration is not yet connected.
-- **Email sending**: Logs to file only. Real SMTP/API sending requires a provider and DNS authentication.
+- **Email sending**: Uses Resend when configured. Falls back to log-only if `RESEND_API_KEY` is not set.
 - **SMS**: Disabled by default. Requires owner opt-in and Twilio setup.
 - **Channel**: Email-only launch. No SMS or push notifications in the MVP.
 
