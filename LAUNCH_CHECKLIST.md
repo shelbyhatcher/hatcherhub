@@ -1,6 +1,6 @@
 # 🚀 The Mom Drop — Launch Checklist
 
-> **Owner-selected domain**: `mom-drop.com`
+> **Owner-selected domain**: `mom-drop.com` (purchased through **GoDaddy**)
 > **Sender identity**: `The Mom Drop` <hello@mom-drop.com>
 > **Launch channel**: Email-only (SMS disabled by default)
 
@@ -8,7 +8,7 @@
 
 ## ✅ Phase 1: DNS & Website Routing
 
-These DNS records must be set at the `mom-drop.com` domain registrar/DNS provider **before** the site goes live. Use the exact record type(s) your hosting provider gives you — most providers supply either an **A record** (pointing to an IP) or a **CNAME/ALIAS** (pointing to a hostname), but not both for the root domain.
+These DNS records must be set in the **GoDaddy DNS manager** (GoDaddy Dashboard → Domains → `mom-drop.com` → DNS Records) **before** the site goes live. Use the exact record type(s) your hosting provider gives you — most providers supply either an **A record** (pointing to an IP) or a **CNAME/ALIAS** (pointing to a hostname), but not both for the root domain.
 
 | Record Type | Name | Value | Purpose |
 |-------------|------|-------|---------|
@@ -43,7 +43,7 @@ Recommended options for the MVP:
 
 ### 2b — Add DNS Records (SPF / DKIM / DMARC)
 
-Once you pick a provider, add these DNS records:
+Once you pick a provider, add these DNS records in the **GoDaddy DNS manager** (same location as Phase 1):
 
 ```dns
 ; SPF — authorize your provider to send on your behalf
@@ -56,7 +56,7 @@ TXT  <dkim-selector>._domainkey  "<provider-dkim-key>"
 TXT  _dmarc  "v=DMARC1; p=quarantine; rua=mailto:hello@mom-drop.com"
 ```
 
-> **Important**: DNS propagation can take 1–48 hours. Verify with `dig TXT mom-drop.com` or [MXToolbox](https://mxtoolbox.com) before enabling sending.
+> **Important**: DNS propagation can take 1–48 hours. Verify with `dig TXT mom-drop.com` or [MXToolbox](https://mxtoolbox.com) before enabling sending. In GoDaddy, you can also use their built-in DNS propagation checker.
 
 ### 2c — Add Email Sending Code
 
@@ -136,11 +136,11 @@ curl http://localhost:3000/api/deals
 
 ## 📋 Owner Actions Still Needed
 
-1. ✅ **Confirm** `mom-drop.com` is purchased (owner selected this domain)
+1. ✅ **Confirm** `mom-drop.com` is purchased through GoDaddy (confirmed by owner)
 2. ⬜ **Choose** an email sending provider (SendGrid, Resend, or Amazon SES)
 3. ⬜ **Provide** email provider API keys (store securely, not in chat)
 4. ⬜ **Provide** Amazon Product Advertising API credentials (for real deal scanning, later)
-5. ⬜ **Set** DNS records at the domain registrar
+5. ⬜ **Set** DNS records in the GoDaddy DNS manager (A/CNAME for website routing, TXT for email auth)
 6. ⬜ **Review** the live site and give feedback
 
 ---
