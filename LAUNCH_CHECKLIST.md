@@ -29,43 +29,60 @@ NODE_ENV=production
 
 ## ✅ Phase 2: Email Sender Authentication
 
-Real outbound email is **not yet active** — the app currently logs notifications to `backend/logs/notifications.log` and does not perform live SMTP sending. Follow this checklist to enable it.
+### 2a — Provider: Resend (Owner-Selected)
 
-### 2a — Choose an Email Provider
+The email integration is **already wired** using [Resend](https://resend.com). The worker sends deal alerts via `backend/email.js`, which uses the Resend SDK when configured.
 
-Recommended options for the MVP:
+**Sender identity**: `The Mom Drop` <hello@mom-drop.com>
 
-| Provider | Free Tier | Notes |
-|----------|-----------|-------|
-| **SendGrid** | 100 emails/day | Most common, simple API |
-| **Resend** | 3,000 emails/month | Developer-friendly, modern |
-| **Amazon SES** | 62,000 emails/month | Good if already on AWS |
+### 2b — Obtain and Secure the API Key
 
-### 2b — Add DNS Records (SPF / DKIM / DMARC)
+> ⚠️ **SECURITY WARNING**: If an API key was previously shared in chat, treat it as **compromised**. 
+> 1. Go to https://resend.com/api-keys
+> 2. **Revoke/regenerate** the key immediately
+> 3. Store the new key securely as an environment variable (never in code, never in chat)
+> 4. Set `RESEND_API_KEY=re_xxxxxxxxxxxx` in your `.env` file or hosting dashboard
 
-Once you pick a provider, add these DNS records in the **GoDaddy DNS manager** (same location as Phase 1):
+### 2c — Add DNS Records (SPF / DKIM / DMARC)
+
+In the **GoDaddy DNS manager** (same location as Phase 1), add these records **after** verifying your domain in Resend:
 
 ```dns
-; SPF — authorize your provider to send on your behalf
-TXT  @  "v=spf1 include:<provider-spf> ~all"
+; SPF — authorize Resend to send on your behalf
+TXT  @  "v=spf1 include:spf.resend.com ~all"
 
-; DKIM — sign emails cryptographically (provider gives you the key)
-TXT  <dkim-selector>._domainkey  "<provider-dkim-key>"
+; DKIM — Resend provides this key after domain verification
+TXT  resend._domainkey  "<resend-dkim-key>"
 
 ; DMARC — tell receivers what to do with unauthenticated email
 TXT  _dmarc  "v=DMARC1; p=quarantine; rua=mailto:hello@mom-drop.com"
 ```
 
-> **Important**: DNS propagation can take 1–48 hours. Verify with `dig TXT mom-drop.com` or [MXToolbox](https://mxtoolbox.com) before enabling sending. In GoDaddy, you can also use their built-in DNS propagation checker.
+> **Important**: DNS propagation can take 1–48 hours. Verify with `dig TXT mom-drop.com` or [MXToolbox](https://mxtoolbox.com). In GoDaddy, use their built-in DNS propagation checker.
 
-### 2c — Add Email Sending Code
+### 2d — Enable Sending
 
-The worker (`backend/worker.js`) currently only logs notifications to `backend/logs/notifications.log`. Before production sending:
+By default, email sending is **disabled** (`EMAIL_SENDING_ENABLED=false`). To activate:
 
-1. Install your provider's SDK (e.g., `npm install @sendgrid/mail`)
-2. Set `SENDGRID_API_KEY` (or equivalent) in the environment
-3. Replace the `logNotification()` calls inside the `dispatchAlerts()` function (around line 380 in `worker.js`) with real provider API calls
-4. The sender should be: **The Mom Drop** <hello@mom-drop.com>
+1. Set `EMAIL_SENDING_ENABLED=true` in your environment
+2. Ensure `RESEND_API_KEY` is set
+3. Sender is pre-configured as `The Mom Drop <hello@mom-drop.com>`
+
+### 2e — Test the Integration
+
+Use the safe test utility (never exposes the API key):
+
+```bash
+# Validate configuration (safe, no email sent):
+node scripts/test-email.js
+
+# Send a single test email (requires EMAIL_SENDING_ENABLED=true + RESEND_API_KEY):
+node scripts/test-email.js Shelby.hicks13@gmail.com
+# Or via env var:
+TEST_EMAIL_RECIPIENT=Shelby.hicks13@gmail.com node scripts/test-email.js
+```
+
+The test email will only be sent if **both** `RESEND_API_KEY` is set and `EMAIL_SENDING_ENABLED=true`. Otherwise it logs to `backend/logs/notifications.log`.
 
 ---
 
@@ -82,6 +99,10 @@ PUBLIC_BASE_URL=https://mom-drop.com
 # DB_PATH=/home/team/shared/app.db           # Alternate name
 AMAZON_ASSOCIATE_TAG=shopwitshelby-20
 ENABLE_SMS=false                             # Must be false for MVP launch
+EMAIL_FROM_NAME=The Mom Drop
+EMAIL_FROM_ADDRESS=hello@mom-drop.com
+# EMAIL_SENDING_ENABLED=true                 # Enable only after DNS/email auth
+# RESEND_API_KEY=re_xxxxxxxxxxxx             # Set securely, never commit
 ```
 
 ### Verify the app starts correctly
@@ -127,7 +148,7 @@ curl http://localhost:3000/api/deals
 | Limitation | Details |
 |------------|---------|
 | **Deal scanning** | Currently seeded dummy deals. Real Amazon PAAPI integration not yet connected. |
-| **Email sending** | Logs only. No real SMTP until Phase 2 is complete. |
+| **Email sending** | Wired via Resend. Logs-only until `RESEND_API_KEY` is set and `EMAIL_SENDING_ENABLED=true`. |
 | **SMS** | Disabled by default. Requires owner opt-in and Twilio setup. |
 | **Background worker** | Runs in-process on server start. For production, consider running as a separate PM2 process or cron job. |
 | **Database** | Uses SQLite (single-file). For multi-server scaling, migrate to PostgreSQL. |
@@ -137,11 +158,13 @@ curl http://localhost:3000/api/deals
 ## 📋 Owner Actions Still Needed
 
 1. ✅ **Confirm** `mom-drop.com` is purchased through GoDaddy (confirmed by owner)
-2. ⬜ **Choose** an email sending provider (SendGrid, Resend, or Amazon SES)
-3. ⬜ **Provide** email provider API keys (store securely, not in chat)
-4. ⬜ **Provide** Amazon Product Advertising API credentials (for real deal scanning, later)
-5. ⬜ **Set** DNS records in the GoDaddy DNS manager (A/CNAME for website routing, TXT for email auth)
-6. ⬜ **Review** the live site and give feedback
+2. ✅ **Choose** Resend as email sending provider (owner-selected)
+3. ⬜ **Revoke/regenerate** any API key shared in chat — treat as compromised. Store new key securely as `RESEND_API_KEY` env var
+4. ⬜ **Verify** `mom-drop.com` in Resend dashboard and add DNS records (SPF/DKIM/DMARC) in GoDaddy
+5. ⬜ **Set** `EMAIL_SENDING_ENABLED=true` after DNS propagation
+6. ⬜ **Run** `node scripts/test-email.js Shelby.hicks13@gmail.com` to confirm delivery
+7. ⬜ **Provide** Amazon Product Advertising API credentials (for real deal scanning, later)
+8. ⬜ **Review** the live site and give feedback
 
 ---
 
@@ -161,6 +184,9 @@ tail -20 backend/logs/notifications.log
 curl -s https://mom-drop.com/api/deals | python3 -c "import sys,json;d=json.load(sys.stdin);print(f'Active deals: {d[\"count\"]}')"
 
 curl -s https://mom-drop.com/api/stats | python3 -m json.tool
+
+# Validate email config (safe, no email sent)
+node scripts/test-email.js
 ```
 
 ---

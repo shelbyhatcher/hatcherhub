@@ -3,6 +3,7 @@ import path from 'path';
 import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 import db, { initDB } from './database.js';
+import { sendEmail } from './email.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -390,58 +391,64 @@ function dispatchAlerts(product, originalPrice, discountPrice, discountPercentag
     
     else if (sub.channel === 'email' && sub.email) {
       let emailSubject = '';
-      let emailBody = '';
+      let emailBodyHtml = '';
 
       if (isFlashDrop) {
-        emailSubject = `FLASH DROP: ${brand} is $${savings} OFF! (Run, don\'t walk) ⚡`;
-        emailBody = `
-# ⚡ FLASH DROP: THIS WILL SELL OUT FAST! ⚡
-
-Hey ${sub.name || 'bestie'}, put down whatever you are doing. This is not a drill.
-
-Our automated tracker just flagged a massive price crash on a parenting favorite. These deals *never* last long, and this is the lowest price we have seen all year.
-
-## ${brand} ${productName}
-### Regular Price: ~~$${originalPrice}~~
-### Today's Price: **$${discountPrice} (${discountPercentage}% OFF — Save $${savings}!)**
-
-* **Rating:** ${product.rating} out of 5 Stars (${product.reviews_count.toLocaleString()}+ reviews)
-* **Why you need to run:** ${tagline}
-
-👉 **[RUN! Snag this Deal on Amazon right now ↗](${trackerUrl})**
-
----
-
-### 🚨 Send this to your Mom Group Chat!
-*Don't let your mom friends miss out on a $${savings} saving. Forward this email or text them this link immediately!*
-        `.trim();
+        emailSubject = `FLASH DROP: ${brand} is ${savings} OFF! (Run, don\'t walk) ⚡`;
+        emailBodyHtml = `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="font-family: 'Plus Jakarta Sans', Arial, sans-serif; background: #fff5f5; padding: 20px;">
+  <div style="max-width: 480px; margin: 0 auto; background: white; border-radius: 12px; padding: 32px; border: 1px solid #ffe6e2;">
+    <h1 style="color: #FF6F61; font-size: 22px; margin-top: 0;">⚡ FLASH DROP: THIS WILL SELL OUT FAST!</h1>
+    <p style="color: #4a5568; font-size: 14px; line-height: 1.6;">
+      Hey ${sub.name || 'bestie'}, put down whatever you are doing. This is not a drill.
+    </p>
+    <p style="color: #4a5568; font-size: 14px; line-height: 1.6;">
+      Our automated tracker just flagged a massive price crash on a parenting favorite.
+    </p>
+    <h2 style="color: #2B2D42; font-size: 18px;">${brand} ${productName}</h2>
+    <p style="font-size: 15px;">
+      <span style="text-decoration: line-through; color: #a0aec0;">${originalPrice}</span>
+      <span style="color: #FF6F61; font-size: 24px; font-weight: bold;"> ${discountPrice}</span>
+      <span style="background: #FF6F61; color: white; padding: 2px 8px; border-radius: 4px; font-size: 12px;">${discountPercentage}% OFF</span>
+    </p>
+    <p style="color: #4a5568; font-size: 13px;">${product.rating}★ (${product.reviews_count.toLocaleString()} reviews)</p>
+    <p style="color: #4a5568; font-size: 13px; font-style: italic;">${tagline}</p>
+    <a href="${trackerUrl}" style="display: inline-block; background: #FF6F61; color: white; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-weight: bold; margin-top: 12px;">Run! Snag this Deal ↗</a>
+    <p style="color: #a0aec0; font-size: 11px; margin-top: 20px;">Send this to your Mom Group Chat!</p>
+  </div>
+</body>
+</html>`.trim();
       } else {
         emailSubject = `MOM DROP: ${discountPercentage}% Off ${brand} ${productName}! 🚨`;
-        emailBody = `
-# Today's Featured Mom Drop! 🚨
-
-Hey ${sub.name || 'bestie'}! Our 24/7 deal finder just flagged an absolute beauty of a price drop on a household favorite. If this has been on your wishlist, now is the time to add to cart!
-
----
-
-## ${brand} ${productName}
-**Category:** ${product.category.toUpperCase().replace('-', ' ')}
-
-### Regular Price: ~~$${originalPrice}~~
-### Today's Price: **$${discountPrice} (${discountPercentage}% Off!)**
-
-* **Rating:** ${product.rating} out of 5 Stars (${product.reviews_count.toLocaleString()} verified reviews)
-* **Why we're obsessed:** ${tagline}
-
-👉 **[Grab this deal on Amazon before it sells out ↗](${trackerUrl})**
-
----
-
-### 💌 Send this deal to a mom friend!
-*Don't let your bestie pay full price. Text this deal directly to her group chat!*
-        `.trim();
+        emailBodyHtml = `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="font-family: 'Plus Jakarta Sans', Arial, sans-serif; background: #fff5f5; padding: 20px;">
+  <div style="max-width: 480px; margin: 0 auto; background: white; border-radius: 12px; padding: 32px; border: 1px solid #ffe6e2;">
+    <h1 style="color: #FF6F61; font-size: 22px; margin-top: 0;">Today's Featured Mom Drop! 🚨</h1>
+    <p style="color: #4a5568; font-size: 14px; line-height: 1.6;">
+      Hey ${sub.name || 'bestie'}! Our 24/7 deal finder just flagged a beauty of a price drop.
+    </p>
+    <h2 style="color: #2B2D42; font-size: 18px;">${brand} ${productName}</h2>
+    <p style="color: #a0aec0; font-size: 12px; text-transform: uppercase;">${product.category.toUpperCase().replace('-', ' ')}</p>
+    <p style="font-size: 15px;">
+      <span style="text-decoration: line-through; color: #a0aec0;">${originalPrice}</span>
+      <span style="color: #FF6F61; font-size: 24px; font-weight: bold;"> ${discountPrice}</span>
+      <span style="background: #FF6F61; color: white; padding: 2px 8px; border-radius: 4px; font-size: 12px;">${discountPercentage}% OFF</span>
+    </p>
+    <p style="color: #4a5568; font-size: 13px;">${product.rating}★ (${product.reviews_count.toLocaleString()} reviews)</p>
+    <p style="color: #4a5568; font-size: 13px; font-style: italic;">${tagline}</p>
+    <a href="${trackerUrl}" style="display: inline-block; background: #FF6F61; color: white; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-weight: bold; margin-top: 12px;">Grab this deal on Amazon ↗</a>
+    <p style="color: #a0aec0; font-size: 11px; margin-top: 20px;">Send this deal to a mom friend!</p>
+  </div>
+</body>
+</html>`.trim();
       }
-      logNotification('MOCK_SENDGRID_EMAIL', `To: ${sub.email}\nSubject: ${emailSubject}\nBody:\n${emailBody}`);
+      sendEmail({ to: sub.email, subject: emailSubject, html: emailBodyHtml });
     }
   });
 }
