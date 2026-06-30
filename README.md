@@ -65,7 +65,7 @@ the-mom-drop/
 | GET | `/api/deals` | Active deals (filterable by category, sort) |
 | POST | `/api/subscribe` | Add a subscriber |
 | POST | `/api/unsubscribe` | Remove a subscriber |
-| GET | `/api/click` | Track affiliate link click (302 redirect to Amazon) |
+| GET | `/api/clicks/track?dealId=...` | Track affiliate link click (302 redirect to Amazon) |
 | GET | `/api/stats` | Admin dashboard metrics |
 
 ---

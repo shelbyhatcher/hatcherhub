@@ -1,6 +1,6 @@
 # 🚀 The Mom Drop — Launch Checklist
 
-> **Owner-selected domain**: `mom-drop.com`
+> **Owner-selected domain**: `mom-drop.com` (purchased through **GoDaddy**)
 > **Sender identity**: `The Mom Drop` <hello@mom-drop.com>
 > **Launch channel**: Email-only (SMS disabled by default)
 
@@ -8,13 +8,14 @@
 
 ## ✅ Phase 1: DNS & Website Routing
 
-These DNS records must be set at the `mom-drop.com` domain registrar/DNS provider **before** the site goes live.
+These DNS records must be set in the **GoDaddy DNS manager** (GoDaddy Dashboard → Domains → `mom-drop.com` → DNS Records) **before** the site goes live. Use the exact record type(s) your hosting provider gives you — most providers supply either an **A record** (pointing to an IP) or a **CNAME/ALIAS** (pointing to a hostname), but not both for the root domain.
 
 | Record Type | Name | Value | Purpose |
 |-------------|------|-------|---------|
-| **A** | `@` | (your server IP) | Root domain → your hosting server |
+| **A** (or CNAME/ALIAS) | `@` | As provided by your host | Root domain → your hosting server |
 | **CNAME** | `www` | `mom-drop.com` | Optional: www redirect to root |
-| **A** or **CNAME** | `@` | (as required by your host) | Check your hosting provider's DNS setup docs |
+
+> ⚠️ **Do not create both an A and a CNAME for `@`** — conflicting root records will break DNS resolution. Follow your hosting provider's exact instructions.
 
 **Deployment env vars to set:**
 
@@ -42,7 +43,7 @@ Recommended options for the MVP:
 
 ### 2b — Add DNS Records (SPF / DKIM / DMARC)
 
-Once you pick a provider, add these DNS records:
+Once you pick a provider, add these DNS records in the **GoDaddy DNS manager** (same location as Phase 1):
 
 ```dns
 ; SPF — authorize your provider to send on your behalf
@@ -55,15 +56,15 @@ TXT  <dkim-selector>._domainkey  "<provider-dkim-key>"
 TXT  _dmarc  "v=DMARC1; p=quarantine; rua=mailto:hello@mom-drop.com"
 ```
 
-> **Important**: DNS propagation can take 1–48 hours. Verify with `dig TXT mom-drop.com` or [MXToolbox](https://mxtoolbox.com) before enabling sending.
+> **Important**: DNS propagation can take 1–48 hours. Verify with `dig TXT mom-drop.com` or [MXToolbox](https://mxtoolbox.com) before enabling sending. In GoDaddy, you can also use their built-in DNS propagation checker.
 
 ### 2c — Add Email Sending Code
 
-The worker (`backend/worker.js`) currently only logs notifications. Before production sending:
+The worker (`backend/worker.js`) currently only logs notifications to `backend/logs/notifications.log`. Before production sending:
 
 1. Install your provider's SDK (e.g., `npm install @sendgrid/mail`)
 2. Set `SENDGRID_API_KEY` (or equivalent) in the environment
-3. Update `sendNotification(subscriber, deal)` in `worker.js` to call the provider API
+3. Replace the `logNotification()` calls inside the `dispatchAlerts()` function (around line 380 in `worker.js`) with real provider API calls
 4. The sender should be: **The Mom Drop** <hello@mom-drop.com>
 
 ---
@@ -135,11 +136,11 @@ curl http://localhost:3000/api/deals
 
 ## 📋 Owner Actions Still Needed
 
-1. ✅ **Confirm** `mom-drop.com` is purchased (owner selected this domain)
+1. ✅ **Confirm** `mom-drop.com` is purchased through GoDaddy (confirmed by owner)
 2. ⬜ **Choose** an email sending provider (SendGrid, Resend, or Amazon SES)
 3. ⬜ **Provide** email provider API keys (store securely, not in chat)
 4. ⬜ **Provide** Amazon Product Advertising API credentials (for real deal scanning, later)
-5. ⬜ **Set** DNS records at the domain registrar
+5. ⬜ **Set** DNS records in the GoDaddy DNS manager (A/CNAME for website routing, TXT for email auth)
 6. ⬜ **Review** the live site and give feedback
 
 ---
@@ -156,8 +157,10 @@ curl -s https://mom-drop.com/api/stats | python3 -m json.tool
 # Check notification log (email actions are recorded here until real sending is wired)
 tail -20 backend/logs/notifications.log
 
-# Verify database is writable
-sqlite3 /home/team/shared/app.db "SELECT COUNT(*) as deals FROM active_deals;"
+# Verify deals and stats are accessible
+curl -s https://mom-drop.com/api/deals | python3 -c "import sys,json;d=json.load(sys.stdin);print(f'Active deals: {d[\"count\"]}')"
+
+curl -s https://mom-drop.com/api/stats | python3 -m json.tool
 ```
 
 ---
