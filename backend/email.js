@@ -3,6 +3,10 @@
 // =============================================================================
 // Sends transactional emails via Resend when EMAIL_SENDING_ENABLED=true.
 // Falls back to log-only mode in dev/test — never exposes the API key in logs.
+//
+// NOTE: All env vars are read lazily from process.env at call time, not
+// captured at import. This ensures dotenv.config() works regardless of
+// static ESM import ordering.
 // =============================================================================
 
 import { Resend } from 'resend';
@@ -13,11 +17,13 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// --- Configuration ---
-const RESEND_API_KEY = process.env.RESEND_API_KEY || '';
-const EMAIL_FROM_NAME = process.env.EMAIL_FROM_NAME || 'The Mom Drop';
-const EMAIL_FROM_ADDRESS = process.env.EMAIL_FROM_ADDRESS || 'hello@mom-drop.com';
-const EMAIL_SENDING_ENABLED = process.env.EMAIL_SENDING_ENABLED === 'true';
+// --- Lazily-read env helpers ---
+function getApiKey()      { return process.env.RESEND_API_KEY || ''; }
+function getFromName()    { return process.env.EMAIL_FROM_NAME || 'The Mom Drop'; }
+function getFromAddress() { return process.env.EMAIL_FROM_ADDRESS || 'hello@mom-drop.com'; }
+function isSendingEnabled() { return process.env.EMAIL_SENDING_ENABLED === 'true'; }
+
+// --- Paths (computed once; don't depend on env vars) ---
 const LOGS_DIR = path.join(__dirname, 'logs');
 fs.mkdirSync(LOGS_DIR, { recursive: true });
 const NOTIFICATIONS_LOG_PATH = path.join(LOGS_DIR, 'notifications.log');
@@ -26,24 +32,27 @@ const NOTIFICATIONS_LOG_PATH = path.join(LOGS_DIR, 'notifications.log');
 let resendClient = null;
 
 function getClient() {
-  if (!RESEND_API_KEY) return null;
+  const apiKey = getApiKey();
+  if (!apiKey) return null;
   if (!resendClient) {
-    resendClient = new Resend(RESEND_API_KEY);
+    resendClient = new Resend(apiKey);
   }
   return resendClient;
 }
 
 // --- Safe Config Validation (never exposes the key) ---
 export function validateEmailConfig() {
-  const hasKey = RESEND_API_KEY.length > 0;
-  const fromAddress = EMAIL_FROM_ADDRESS;
-  const enabled = EMAIL_SENDING_ENABLED;
+  const apiKey = getApiKey();
+  const fromAddress = getFromAddress();
+  const fromName = getFromName();
+  const enabled = isSendingEnabled();
+  const hasKey = apiKey.length > 0;
 
   return {
     configured: hasKey,
     sendingEnabled: enabled,
     fromAddress,
-    fromName: EMAIL_FROM_NAME,
+    fromName,
     // NEVER include RESEND_API_KEY itself — just a boolean
     status: hasKey
       ? (enabled ? 'ready' : 'configured_but_disabled')
@@ -59,12 +68,13 @@ export function validateEmailConfig() {
 // --- Core send function ---
 export async function sendEmail({ to, subject, html, text }) {
   const client = getClient();
-  const from = `${EMAIL_FROM_NAME} <${EMAIL_FROM_ADDRESS}>`;
+  const enabled = isSendingEnabled();
+  const from = `${getFromName()} <${getFromAddress()}>`;
 
-  if (!client || !EMAIL_SENDING_ENABLED) {
+  if (!client || !enabled) {
     // Log-only mode: record what would have been sent
     const timestamp = new Date().toISOString();
-    const logEntry = `[${timestamp}] [EMAIL_LOG_ONLY] To: ${to} | Subject: ${subject}${EMAIL_SENDING_ENABLED ? '' : ' (SENDING DISABLED — set EMAIL_SENDING_ENABLED=true)'}\nBody preview: ${(html || text || '').substring(0, 200)}...\n----------------------------------------\n`;
+    const logEntry = `[${timestamp}] [EMAIL_LOG_ONLY] To: ${to} | Subject: ${subject}${enabled ? '' : ' (SENDING DISABLED — set EMAIL_SENDING_ENABLED=true)'}\nBody preview: ${(html || text || '').substring(0, 200)}...\n----------------------------------------\n`;
     fs.appendFileSync(NOTIFICATIONS_LOG_PATH, logEntry);
     console.log(`[EMAIL] Logged email to ${to} (subject: "${subject}") — sending ${client ? 'disabled by EMAIL_SENDING_ENABLED=false' : 'not configured (set RESEND_API_KEY)'}`);
     return { success: true, mode: 'log-only', reason: client ? 'disabled' : 'no-api-key' };
@@ -123,7 +133,7 @@ export async function sendTestEmail(recipient) {
             This is a test email sent from The Mom Drop platform. If you're reading this, your email configuration is set up correctly and you're ready for the email-only MVP launch.
           </p>
           <div style="border-top: 1px solid #e2e8f0; margin-top: 24px; padding-top: 16px; font-size: 12px; color: #a0aec0; text-align: center;">
-            Sent from The Mom Drop · <a href="#" style="color: #a0aec0;">Unsubscribe</a>
+            Sent from The Mom Drop &middot; <a href="#" style="color: #a0aec0;">Unsubscribe</a>
           </div>
         </div>
       </body>
