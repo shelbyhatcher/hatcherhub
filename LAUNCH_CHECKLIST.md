@@ -8,13 +8,14 @@
 
 ## ✅ Phase 1: DNS & Website Routing
 
-These DNS records must be set at the `mom-drop.com` domain registrar/DNS provider **before** the site goes live.
+These DNS records must be set at the `mom-drop.com` domain registrar/DNS provider **before** the site goes live. Use the exact record type(s) your hosting provider gives you — most providers supply either an **A record** (pointing to an IP) or a **CNAME/ALIAS** (pointing to a hostname), but not both for the root domain.
 
 | Record Type | Name | Value | Purpose |
 |-------------|------|-------|---------|
-| **A** | `@` | (your server IP) | Root domain → your hosting server |
+| **A** (or CNAME/ALIAS) | `@` | As provided by your host | Root domain → your hosting server |
 | **CNAME** | `www` | `mom-drop.com` | Optional: www redirect to root |
-| **A** or **CNAME** | `@` | (as required by your host) | Check your hosting provider's DNS setup docs |
+
+> ⚠️ **Do not create both an A and a CNAME for `@`** — conflicting root records will break DNS resolution. Follow your hosting provider's exact instructions.
 
 **Deployment env vars to set:**
 
@@ -59,11 +60,11 @@ TXT  _dmarc  "v=DMARC1; p=quarantine; rua=mailto:hello@mom-drop.com"
 
 ### 2c — Add Email Sending Code
 
-The worker (`backend/worker.js`) currently only logs notifications. Before production sending:
+The worker (`backend/worker.js`) currently only logs notifications to `backend/logs/notifications.log`. Before production sending:
 
 1. Install your provider's SDK (e.g., `npm install @sendgrid/mail`)
 2. Set `SENDGRID_API_KEY` (or equivalent) in the environment
-3. Update `sendNotification(subscriber, deal)` in `worker.js` to call the provider API
+3. Replace the `logNotification()` calls inside the `dispatchAlerts()` function (around line 380 in `worker.js`) with real provider API calls
 4. The sender should be: **The Mom Drop** <hello@mom-drop.com>
 
 ---
@@ -156,8 +157,10 @@ curl -s https://mom-drop.com/api/stats | python3 -m json.tool
 # Check notification log (email actions are recorded here until real sending is wired)
 tail -20 backend/logs/notifications.log
 
-# Verify database is writable
-sqlite3 /home/team/shared/app.db "SELECT COUNT(*) as deals FROM active_deals;"
+# Verify deals and stats are accessible
+curl -s https://mom-drop.com/api/deals | python3 -c "import sys,json;d=json.load(sys.stdin);print(f'Active deals: {d[\"count\"]}')"
+
+curl -s https://mom-drop.com/api/stats | python3 -m json.tool
 ```
 
 ---
