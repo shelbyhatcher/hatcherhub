@@ -77,9 +77,10 @@ Use the safe test utility (never exposes the API key):
 node scripts/test-email.js
 
 # Send a single test email (requires EMAIL_SENDING_ENABLED=true + RESEND_API_KEY):
-node scripts/test-email.js Shelby.hicks13@gmail.com
+# Replace with your own email address (or set TEST_EMAIL_RECIPIENT in .env):
+node scripts/test-email.js your@email.com
 # Or via env var:
-TEST_EMAIL_RECIPIENT=Shelby.hicks13@gmail.com node scripts/test-email.js
+TEST_EMAIL_RECIPIENT=your@email.com node scripts/test-email.js
 ```
 
 The test email will only be sent if **both** `RESEND_API_KEY` is set and `EMAIL_SENDING_ENABLED=true`. Otherwise it logs to `backend/logs/notifications.log`.
@@ -162,7 +163,7 @@ curl http://localhost:3000/api/deals
 3. ⬜ **Revoke/regenerate** any API key shared in chat — treat as compromised. Store new key securely as `RESEND_API_KEY` env var
 4. ⬜ **Verify** `mom-drop.com` in Resend dashboard and add DNS records (SPF/DKIM/DMARC) in GoDaddy
 5. ⬜ **Set** `EMAIL_SENDING_ENABLED=true` after DNS propagation
-6. ⬜ **Run** `node scripts/test-email.js Shelby.hicks13@gmail.com` to confirm delivery
+6. ⬜ **Run** `node scripts/test-email.js your@email.com` to confirm delivery
 7. ⬜ **Provide** Amazon Product Advertising API credentials (for real deal scanning, later)
 8. ⬜ **Review** the live site and give feedback
 
